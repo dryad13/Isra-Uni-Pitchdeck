@@ -27,3 +27,7 @@ Product docs, sample notes, and capture fixtures used to author this deck live i
 ## App (demo package)
 
 Runnable Windows demo lives in [`app/`](app/). Start with `app/NEW 2 - Launch OMR (no black window).vbs` (see `app/README.md`).
+
+## Source (editable app)
+
+Full OMR Console codebase for development: [`source/`](source/). On a new laptop, clone this repo and work inside `source/` (see `source/README.md`).

@@ -1,0 +1,188 @@
+:root {
+  /* Atlassian Design System tokens (see frontend/DESIGN.md) */
+  --ads-primary: #0052cc;
+  --ads-primary-hover: #0747a6;
+  --ads-interactive: #0065ff;
+  --ads-on-primary: #ffffff;
+
+  --ads-ink: #172b4d;
+  --ads-ink-muted: #6b778c;
+
+  --ads-canvas: #ffffff;
+  --ads-surface-1: #f4f5f7;
+  --ads-surface-2: #ebecf0;
+  --ads-border: #dfe1e6;
+
+  --ads-success: #00875a;
+  --ads-success-bg: #e3fcef;
+  --ads-warning: #ff8b00;
+  --ads-warning-bg: #fffae6;
+  --ads-danger: #de350b;
+  --ads-danger-bg: #ffebe6;
+  --ads-discovery: #6554c0;
+  --ads-discovery-bg: #eae6ff;
+  --ads-neutral-bg: #ebecf0;
+  --ads-selection-bg: #deebff;
+  --ads-selection-border: #b3d4ff;
+
+  --ads-radius-sm: 3px;
+  --ads-radius-md: 4px;
+  --ads-radius-lg: 8px;
+
+  --ads-shadow-card: 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
+  --ads-shadow-overlay: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.06);
+
+  --ads-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --ads-mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  font-family: var(--ads-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ads-ink);
+  background: var(--ads-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--ads-ink);
+  font-weight: 600;
+  margin: 0;
+}
+
+h1 {
+  font-size: 20px;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 16px;
+}
+
+h3 {
+  font-size: 14px;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--ads-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code {
+  font-family: var(--ads-mono);
+  font-size: 12.5px;
+  background: var(--ads-surface-1);
+  border-radius: var(--ads-radius-sm);
+  padding: 2px 6px;
+  color: var(--ads-ink);
+}
+
+input,
+select,
+button,
+textarea {
+  font-family: inherit;
+  font-size: 14px;
+}
+
+input,
+select,
+textarea {
+  color: var(--ads-ink);
+  background: var(--ads-canvas);
+  border: 1px solid var(--ads-border);
+  border-radius: var(--ads-radius-md);
+  padding: 6px 8px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--ads-primary);
+  outline-offset: 1px;
+  border-color: var(--ads-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ads-primary);
+  outline-offset: 1px;
+}
+
+/* Spacing scale: 1=2px, 2=4px, 3=6px, 4=8px, 5=12px, 6=16px, 7=20px, 8=24px, 9=32px, 10=40px */
+:root {
+  --ads-space-1: 2px;
+  --ads-space-2: 4px;
+  --ads-space-3: 6px;
+  --ads-space-4: 8px;
+  --ads-space-5: 12px;
+  --ads-space-6: 16px;
+  --ads-space-7: 20px;
+  --ads-space-8: 24px;
+  --ads-space-9: 32px;
+  --ads-space-10: 40px;
+  --ads-content-max: 1080px;
+  --ads-panel-padding: 16px 20px;
+  --ads-ink-helper: #5e6c84;
+}
+
+.mt-1 { margin-top: var(--ads-space-1); }
+.mt-2 { margin-top: var(--ads-space-2); }
+.mt-3 { margin-top: var(--ads-space-3); }
+.mt-4 { margin-top: var(--ads-space-4); }
+.mt-5 { margin-top: var(--ads-space-5); }
+.mt-6 { margin-top: var(--ads-space-6); }
+.mt-8 { margin-top: var(--ads-space-8); }
+
+.mb-1 { margin-bottom: var(--ads-space-1); }
+.mb-2 { margin-bottom: var(--ads-space-2); }
+.mb-3 { margin-bottom: var(--ads-space-3); }
+.mb-4 { margin-bottom: var(--ads-space-4); }
+.mb-5 { margin-bottom: var(--ads-space-5); }
+.mb-6 { margin-bottom: var(--ads-space-6); }
+.mb-8 { margin-bottom: var(--ads-space-8); }
+
+.gap-2 { gap: var(--ads-space-2); }
+.gap-3 { gap: var(--ads-space-3); }
+.gap-4 { gap: var(--ads-space-4); }
+.gap-6 { gap: var(--ads-space-6); }
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--ads-ink-muted);
+  line-height: 1.5;
+}
+
+.text-helper {
+  color: var(--ads-ink-helper);
+  font-size: 12px;
+}

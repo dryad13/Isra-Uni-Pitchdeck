@@ -1,0 +1,16 @@
+{
+  "name": "omr-console-tests",
+  "private": true,
+  "scripts": {
+    "test": "npm run test:backend && npm run test:unit && npm run test:api && npm run test:e2e",
+    "test:backend": "python -m pytest tests/backend -q",
+    "test:unit": "npm run test --prefix frontend",
+    "test:api": "playwright test --project=api",
+    "test:e2e": "playwright test --project=e2e",
+    "test:playwright": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.51.0",
+    "@types/node": "^24.12.3"
+  }
+}

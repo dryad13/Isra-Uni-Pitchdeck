@@ -1,0 +1,19 @@
+fastapi
+uvicorn
+websockets
+sqlalchemy
+alembic
+pydantic-settings
+pyyaml
+python-multipart
+watchdog
+pandas
+openpyxl
+opencv-python-headless
+numpy
+pillow
+pdf2image
+pywebview>=5.0
+
+# Vendored OMRChecker v1.1.0 runtime
+-r omr_engine/requirements-vendor.txt

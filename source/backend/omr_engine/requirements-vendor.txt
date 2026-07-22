@@ -1,0 +1,7 @@
+# Runtime dependencies for vendored OMRChecker v1.1.0 (not in main app requirements.txt)
+rich
+dotmap
+matplotlib
+screeninfo
+deepmerge
+jsonschema
