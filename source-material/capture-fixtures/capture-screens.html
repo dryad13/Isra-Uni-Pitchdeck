@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>OMR Console — Screenshot Capture Fixtures</title>
+<style>
+  :root {
+    --ads-primary: #0052cc;
+    --ads-primary-hover: #0747a6;
+    --ads-on-primary: #ffffff;
+    --ads-ink: #172b4d;
+    --ads-ink-muted: #6b778c;
+    --ads-canvas: #ffffff;
+    --ads-surface-1: #f4f5f7;
+    --ads-surface-2: #ebecf0;
+    --ads-border: #dfe1e6;
+    --ads-success: #00875a;
+    --ads-warning: #ff8b00;
+    --ads-danger: #de350b;
+    --ads-radius-md: 4px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    color: var(--ads-ink);
+    background: #c1c7d0;
+  }
+  .screen {
+    width: 1280px;
+    height: 800px;
+    margin: 24px auto;
+    background: var(--ads-canvas);
+    display: flex;
+    overflow: hidden;
+    position: relative;
+  }
+  .sidebar {
+    flex: 0 0 220px;
+    background: var(--ads-surface-1);
+    border-right: 1px solid var(--ads-border);
+    padding: 20px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .brand { font-weight: 700; font-size: 15px; padding: 4px 12px; }
+  .nav-link {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 12px; border-radius: 4px;
+    color: var(--ads-ink-muted); font-weight: 500; text-decoration: none;
+  }
+  .nav-link.active {
+    background: var(--ads-canvas); color: var(--ads-primary);
+    box-shadow: inset 0 0 0 1px var(--ads-border);
+  }
+  .nav-count {
+    min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9999px;
+    background: var(--ads-primary); color: #fff; font-size: 11px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 0 24px 24px; }
+  .header {
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px 0; margin-bottom: 16px; border-bottom: 1px solid var(--ads-border);
+  }
+  .header img { height: 52px; }
+  .page-title { font-size: 24px; font-weight: 600; margin: 0 0 4px; }
+  .page-sub { color: var(--ads-ink-muted); margin: 0 0 16px; }
+  .panel {
+    background: var(--ads-canvas); border: 1px solid var(--ads-border);
+    border-radius: 4px; padding: 16px; box-shadow: 0 1px 1px rgba(9,30,66,.08);
+  }
+  .stepper { display: flex; gap: 8px; margin-bottom: 16px; }
+  .step-chip {
+    flex: 1; padding: 10px 12px; border-radius: 4px; background: var(--ads-surface-1);
+    border: 1px solid var(--ads-border); font-size: 13px; font-weight: 600;
+  }
+  .step-chip.active { border-color: var(--ads-primary); color: var(--ads-primary); background: #deebff; }
+  .step-chip.done { color: var(--ads-success); }
+  .step-num {
+    display: inline-flex; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--ads-primary); color: #fff; font-size: 12px; align-items: center; justify-content: center;
+    margin-right: 8px;
+  }
+  h2 { font-size: 16px; margin: 0 0 12px; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--ads-ink-muted); margin-bottom: 4px; }
+  select, input, textarea {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--ads-border); border-radius: 4px;
+    font: inherit; color: var(--ads-ink); background: #fff;
+  }
+  .field { margin-bottom: 12px; }
+  .field-row { display: flex; gap: 12px; }
+  .field-row > * { flex: 1; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 4px; border: 1px solid var(--ads-border);
+    background: var(--ads-surface-1); color: var(--ads-ink); font-weight: 600; font-size: 14px; cursor: default;
+  }
+  .btn-primary { background: var(--ads-primary); color: #fff; border-color: var(--ads-primary); }
+  .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--ads-border); }
+  th { color: var(--ads-ink-muted); font-weight: 600; background: var(--ads-surface-1); }
+  tr.selected { background: #deebff; }
+  .lozenge {
+    display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: 700;
+  }
+  .lz-success { background: #e3fcef; color: #006644; }
+  .lz-warning { background: #fff0b3; color: #172b4d; }
+  .lz-danger { background: #ffebe6; color: #bf2600; }
+  .lz-info { background: #deebff; color: #0747a6; }
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--ads-border); margin-bottom: 16px; }
+  .tab { padding: 8px 14px; color: var(--ads-ink-muted); font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .tab.active { color: var(--ads-primary); border-bottom-color: var(--ads-primary); }
+  .progress {
+    height: 8px; background: var(--ads-surface-2); border-radius: 4px; overflow: hidden; margin: 8px 0 4px;
+  }
+  .progress > i { display: block; height: 100%; width: 68%; background: var(--ads-primary); }
+  .grid-key {
+    display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-top: 8px;
+  }
+  .grid-key span {
+    text-align: center; padding: 6px 2px; border: 1px solid var(--ads-border); border-radius: 3px;
+    font-size: 11px; font-weight: 600; background: #e3fcef; color: #006644;
+  }
+  .coverage { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 12px; }
+  .coverage span { padding: 4px 8px; background: var(--ads-surface-1); border-radius: 3px; font-size: 12px; }
+  .coverage .ok { background: #e3fcef; color: #006644; font-weight: 600; }
+  .split { display: flex; gap: 16px; }
+  .split > * { flex: 1; min-width: 0; }
+  .crop {
+    width: 100%; height: 140px; background: var(--ads-surface-2); border: 1px dashed var(--ads-border);
+    border-radius: 4px; display: flex; align-items: center; justify-content: center; color: var(--ads-ink-muted);
+  }
+  .stat-row { display: flex; gap: 12px; margin-bottom: 16px; }
+  .stat {
+    flex: 1; padding: 12px; background: var(--ads-surface-1); border-radius: 4px; border: 1px solid var(--ads-border);
+  }
+  .stat b { display: block; font-size: 22px; color: var(--ads-primary); }
+  .stat span { font-size: 12px; color: var(--ads-ink-muted); }
+  .tool-card {
+    padding: 20px; border: 1px solid var(--ads-border); border-radius: 4px; margin-bottom: 12px;
+    background: var(--ads-surface-1);
+  }
+  .tool-card h3 { margin: 0 0 6px; font-size: 16px; }
+  .overlay-preview {
+    height: 420px; background: #fff url("./screenshots/11-calibrator-source.png") center/contain no-repeat;
+    border: 1px solid var(--ads-border); border-radius: 4px;
+  }
+  .sheet-preview {
+    height: 520px; background: #fff url("./screenshots/13-isra-sheet-sample.png") center/contain no-repeat;
+    border: 1px solid var(--ads-border); border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- S01 shell + run exam home -->
+<section class="screen" id="s01">
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <nav>
+      <div class="nav-link active">Run exam</div>
+      <div class="nav-link">Results</div>
+      <div class="nav-link">Reports</div>
+      <div class="nav-link">Roster</div>
+      <div class="nav-link">Tools</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Run exam</h1>
+    <p class="page-sub">Set up the exam, load the answer key, then process scanned sheets.</p>
+    <div class="stepper">
+      <div class="step-chip active">1 · Exam &amp; session</div>
+      <div class="step-chip">2 · Answer key</div>
+      <div class="step-chip">3 · Process sheets</div>
+    </div>
+    <div class="panel">
+      <h2><span class="step-num">1</span>Choose exam and session</h2>
+      <div class="field-row">
+        <div class="field"><label>Exam program</label><select><option>MBBS Midterm — Batch 2026</option></select></div>
+        <div class="field"><label>Template family</label><select><option>150Q</option></select></div>
+      </div>
+      <table>
+        <thead><tr><th>Session</th><th>Global Q</th><th>Sheet</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr class="selected"><td>Sitting 1 — Anatomy</td><td>Q1–Q20</td><td>20Q</td><td><span class="lozenge lz-success">Ready</span></td></tr>
+          <tr><td>Sitting 2 — Physiology</td><td>Q21–Q50</td><td>30Q</td><td><span class="lozenge lz-info">Key pending</span></td></tr>
+        </tbody>
+      </table>
+      <div class="btn-row"><button class="btn btn-primary">Continue to answer key</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- S02 step exam session (focused) -->
+<section class="screen" id="s02">
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <nav>
+      <div class="nav-link active">Run exam</div>
+      <div class="nav-link">Results</div>
+      <div class="nav-link">Reports</div>
+      <div class="nav-link">Roster</div>
+      <div class="nav-link">Tools</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Run exam</h1>
+    <p class="page-sub">Multi-sitting programs use cumulative global question numbers.</p>
+    <div class="stepper">
+      <div class="step-chip active">1 · Exam &amp; session</div>
+      <div class="step-chip">2 · Answer key</div>
+      <div class="step-chip">3 · Process sheets</div>
+    </div>
+    <div class="panel">
+      <h2><span class="step-num">1</span>Choose exam and session</h2>
+      <div class="field"><label>Exam program</label><select><option selected>MBBS Midterm — Batch 2026</option></select></div>
+      <p style="font-size:12px;color:var(--ads-ink-muted);margin:0 0 12px">Suggested next range: <strong>Q51–Q60</strong></p>
+      <table>
+        <thead><tr><th></th><th>Session</th><th>Global range</th><th>Family</th><th>Key</th></tr></thead>
+        <tbody>
+          <tr><td>○</td><td>Sitting 1 — Anatomy</td><td>Q1–Q20</td><td>150Q</td><td><span class="lozenge lz-success">Complete</span></td></tr>
+          <tr class="selected"><td>●</td><td>Sitting 2 — Physiology</td><td>Q21–Q50</td><td>150Q</td><td><span class="lozenge lz-success">Complete</span></td></tr>
+          <tr><td>○</td><td>Sitting 3 — Biochemistry</td><td>Q51–Q60</td><td>150Q</td><td><span class="lozenge lz-warning">Incomplete</span></td></tr>
+        </tbody>
+      </table>
+      <div class="btn-row">
+        <button class="btn">New session</button>
+        <button class="btn btn-primary">Continue</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S03 answer key -->
+<section class="screen" id="s03">
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <nav>
+      <div class="nav-link active">Run exam</div>
+      <div class="nav-link">Results</div>
+      <div class="nav-link">Reports</div>
+      <div class="nav-link">Roster</div>
+      <div class="nav-link">Tools</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Run exam</h1>
+    <p class="page-sub">Sitting 2 — Physiology · Global Q21–Q50</p>
+    <div class="stepper">
+      <div class="step-chip done">1 · Exam &amp; session</div>
+      <div class="step-chip active">2 · Answer key</div>
+      <div class="step-chip">3 · Process sheets</div>
+    </div>
+    <div class="panel">
+      <h2><span class="step-num">2</span>Load answer key</h2>
+      <div class="coverage">
+        <span class="ok">Q1–Q20 ✓</span>
+        <span class="ok">Q21–Q50 ✓</span>
+        <span>Q51–Q60 pending</span>
+      </div>
+      <div class="tabs">
+        <div class="tab active">Manual grid</div>
+        <div class="tab">CSV / Excel</div>
+        <div class="tab">From marked sheet</div>
+      </div>
+      <div class="grid-key">
+        <span>21 A</span><span>22 C</span><span>23 B</span><span>24 D</span><span>25 A</span>
+        <span>26 B</span><span>27 C</span><span>28 A</span><span>29 D</span><span>30 B</span>
+        <span>31 A</span><span>32 C</span><span>33 D</span><span>34 B</span><span>35 A</span>
+        <span>36 C</span><span>37 B</span><span>38 A</span><span>39 D</span><span>40 C</span>
+        <span>41 A</span><span>42 B</span><span>43 D</span><span>44 C</span><span>45 A</span>
+        <span>46 B</span><span>47 C</span><span>48 A</span><span>49 D</span><span>50 B</span>
+      </div>
+      <div class="btn-row"><button class="btn btn-primary">Save key &amp; continue</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- S04 scanning -->
+<section class="screen" id="s04">
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <nav>
+      <div class="nav-link active">Run exam</div>
+      <div class="nav-link">Results</div>
+      <div class="nav-link">Reports</div>
+      <div class="nav-link">Roster</div>
+      <div class="nav-link">Tools</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Run exam</h1>
+    <p class="page-sub">Canon dropzone · C:\OMR_Dropzone\</p>
+    <div class="stepper">
+      <div class="step-chip done">1 · Exam &amp; session</div>
+      <div class="step-chip done">2 · Answer key</div>
+      <div class="step-chip active">3 · Process sheets</div>
+    </div>
+    <div class="panel">
+      <h2><span class="step-num">3</span>Process sheets</h2>
+      <div class="stat-row">
+        <div class="stat"><b>68</b><span>Processed</span></div>
+        <div class="stat"><b>4</b><span>Need review</span></div>
+        <div class="stat"><b>100</b><span>Expected</span></div>
+        <div class="stat"><b>1.2s</b><span>Avg / page</span></div>
+      </div>
+      <label>Batch progress</label>
+      <div class="progress"><i></i></div>
+      <p style="margin:0 0 12px;font-size:12px;color:var(--ads-ink-muted)">68 of 100 sheets · Watching dropzone for new scans…</p>
+      <div class="btn-row">
+        <button class="btn btn-primary">Open Results</button>
+        <button class="btn">Stop batch</button>
+        <button class="btn">Upload files…</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S05 results queue -->
+<section class="screen" id="s05">
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <nav>
+      <div class="nav-link">Run exam</div>
+      <div class="nav-link active">Results <span class="nav-count">4</span></div>
+      <div class="nav-link">Reports</div>
+      <div class="nav-link">Roster</div>
+      <div class="nav-link">Tools</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Results</h1>
+    <p class="page-sub">Review flagged sheets by roll or browse all processed sheets for a session.</p>
+    <div class="tabs">
+      <div class="tab active">Batch review</div>
+      <div class="tab">All sheets</div>
+    </div>
+    <div class="panel">
+      <div class="field-row" style="margin-bottom:12px">
+        <div class="field"><label>Exam</label><select><option>MBBS Midterm — Batch 2026</option></select></div>
+        <div class="field"><label>Session</label><select><option>Sitting 2 — Physiology</option></select></div>
+      </div>
+      <table>
+        <thead><tr><th>Roll</th><th>Issues</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr class="selected"><td>240118</td><td>2 blank · 1 multi</td><td><span class="lozenge lz-warning">Needs review</span></td><td><button class="btn btn-primary" style="padding:4px 10px;font-size:12px">Review</button></td></tr>
+          <tr><td>240205</td><td>Ambiguous roll</td><td><span class="lozenge lz-danger">Needs review</span></td><td><button class="btn" style="padding:4px 10px;font-size:12px">Review</button></td></tr>
+          <tr><td>240311</td><td>1 multi</td><td><span class="lozenge lz-warning">Needs review</span></td><td><button class="btn" style="padding:4px 10px;font-size:12px">Review</button></td></tr>
+          <tr><td>240402</td><td>3 blank</td><td><span class="lozenge lz-warning">Needs review</span></td><td><button class="btn" style="padding:4px 10px;font-size:12px">Review</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S06 batch review -->
+<section class="screen" id="s06">
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <nav>
+      <div class="nav-link">Run exam</div>
+      <div class="nav-link active">Results <span class="nav-count">4</span></div>
+      <div class="nav-link">Reports</div>
+      <div class="nav-link">Roster</div>
+      <div class="nav-link">Tools</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Results · Review</h1>
+    <p class="page-sub">Roll 240118 · Sheet Q14 → Global Q34 · Multi-mark detected</p>
+    <div class="split">
+      <div class="panel">
+        <h2>Anomaly crop</h2>
+        <div class="crop">Bubble crop · Q34 · A+C filled</div>
+        <p style="font-size:12px;color:var(--ads-ink-muted);margin:8px 0 0">Press <strong>L</strong> to focus · Confirm override to resume batch</p>
+      </div>
+      <div class="panel">
+        <h2>Override</h2>
+        <div class="field"><label>Value</label>
+          <select><option>A</option><option>B</option><option selected>C</option><option>D</option><option>Blank</option></select>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Confirm</button>
+          <button class="btn">Skip</button>
+          <button class="btn">Flag</button>
+        </div>
+        <p style="margin-top:16px;font-size:12px">Queue: <strong>1 of 4</strong> remaining</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S07 sheet detail -->
+<section class="screen" id="s07">
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <nav>
+      <div class="nav-link">Run exam</div>
+      <div class="nav-link active">Results</div>
+      <div class="nav-link">Reports</div>
+      <div class="nav-link">Roster</div>
+      <div class="nav-link">Tools</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Sheet audit</h1>
+    <p class="page-sub">Roll 240118 · Sitting 2 — Physiology · Secure Score 86.2%</p>
+    <div class="panel" style="max-height:580px;overflow:auto">
+      <table>
+        <thead><tr><th>Sheet Q</th><th>Global Q</th><th>Read</th><th>Key</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>21</td><td>A</td><td>A</td><td><span class="lozenge lz-success">Correct</span></td></tr>
+          <tr><td>2</td><td>22</td><td>C</td><td>C</td><td><span class="lozenge lz-success">Correct</span></td></tr>
+          <tr><td>3</td><td>23</td><td>D</td><td>B</td><td><span class="lozenge lz-danger">Wrong</span></td></tr>
+          <tr><td>4</td><td>24</td><td>D</td><td>D</td><td><span class="lozenge lz-success">Correct</span></td></tr>
+          <tr><td>5</td><td>25</td><td>—</td><td>A</td><td><span class="lozenge lz-warning">Blank</span></td></tr>
+          <tr><td>14</td><td>34</td><td>C*</td><td>B</td><td><span class="lozenge lz-info">Overridden</span></td></tr>
+          <tr><td>15</td><td>35</td><td>A</td><td>A</td><td><span class="lozenge lz-success">Correct</span></td></tr>
+          <tr><td>16</td><td>36</td><td>C</td><td>C</td><td><span class="lozenge lz-success">Correct</span></td></tr>
+          <tr><td>20</td><td>40</td><td>B</td><td>C</td><td><span class="lozenge lz-danger">Wrong</span></td></tr>
+          <tr><td>28</td><td>48</td><td>A</td><td>A</td><td><span class="lozenge lz-success">Correct</span></td></tr>
+          <tr><td>30</td><td>50</td><td>B</td><td>B</td><td><span class="lozenge lz-success">Correct</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S08 reports -->
+<section class="screen" id="s08">
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <nav>
+      <div class="nav-link">Run exam</div>
+      <div class="nav-link">Results</div>
+      <div class="nav-link active">Reports</div>
+      <div class="nav-link">Roster</div>
+      <div class="nav-link">Tools</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Reports</h1>
+    <p class="page-sub">Scores and CSV / Excel export for the selected session or full program.</p>
+    <div class="panel">
+      <div class="field-row">
+        <div class="field"><label>Exam</label><select><option>MBBS Midterm — Batch 2026</option></select></div>
+        <div class="field"><label>Scope</label><select><option>Sitting 2 — Physiology</option></select></div>
+        <div class="field"><label>Mode</label><select><option>Literal (A/B/C/D)</option><option>Binary (1/0)</option></select></div>
+        <div class="field"><label>Format</label><select><option>CSV</option><option>Excel</option></select></div>
+      </div>
+      <div class="btn-row" style="margin-bottom:16px">
+        <button class="btn btn-primary">Export</button>
+        <button class="btn">Refresh scores</button>
+      </div>
+      <table>
+        <thead><tr><th>Roll</th><th>Correct</th><th>Wrong</th><th>Blank</th><th>Multi</th><th>%</th><th>Secure Score</th></tr></thead>
+        <tbody>
+          <tr><td>240101</td><td>27</td><td>2</td><td>1</td><td>0</td><td>90.0</td><td><strong>93.1</strong></td></tr>
+          <tr><td>240118</td><td>24</td><td>3</td><td>2</td><td>1</td><td>80.0</td><td><strong>88.9</strong></td></tr>
+          <tr><td>240205</td><td>22</td><td>6</td><td>2</td><td>0</td><td>73.3</td><td><strong>78.6</strong></td></tr>
+          <tr><td>240311</td><td>28</td><td>1</td><td>1</td><td>0</td><td>93.3</td><td><strong>96.6</strong></td></tr>
+          <tr><td>240402</td><td>19</td><td>5</td><td>6</td><td>0</td><td>63.3</td><td><strong>79.2</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S09 roster -->
+<section class="screen" id="s09">
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <nav>
+      <div class="nav-link">Run exam</div>
+      <div class="nav-link">Results</div>
+      <div class="nav-link">Reports</div>
+      <div class="nav-link active">Roster</div>
+      <div class="nav-link">Tools</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Student roster</h1>
+    <p class="page-sub">Upload roll lists per exam program. Unknown rolls go to review.</p>
+    <div class="panel">
+      <div class="field-row">
+        <div class="field"><label>Exam program</label><select><option>MBBS Midterm — Batch 2026</option></select></div>
+        <div class="field"><label>Upload</label><button class="btn" style="width:100%">CSV / Excel…</button></div>
+      </div>
+      <p style="font-size:12px;color:var(--ads-success);font-weight:600;margin:0 0 12px">120 students loaded · 0 unknown rolls in last batch</p>
+      <table>
+        <thead><tr><th>Roll</th><th>Name</th><th>Section</th></tr></thead>
+        <tbody>
+          <tr><td>240101</td><td>Demo Student A</td><td>A</td></tr>
+          <tr><td>240118</td><td>Demo Student B</td><td>A</td></tr>
+          <tr><td>240205</td><td>Demo Student C</td><td>B</td></tr>
+          <tr><td>240311</td><td>Demo Student D</td><td>B</td></tr>
+          <tr><td>240402</td><td>Demo Student E</td><td>C</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S10 tools hub -->
+<section class="screen" id="s10">
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <nav>
+      <div class="nav-link">Run exam</div>
+      <div class="nav-link">Results</div>
+      <div class="nav-link">Reports</div>
+      <div class="nav-link">Roster</div>
+      <div class="nav-link active">Tools</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Tools</h1>
+    <p class="page-sub">Calibration and accuracy utilities for QA / IT.</p>
+    <div class="tool-card">
+      <h3>Layout Calibrator</h3>
+      <p style="margin:0 0 8px;color:var(--ads-ink-muted)">Tune bubble overlays and save path layouts for 150Q / 60Q families.</p>
+      <button class="btn btn-primary">Open calibrator</button>
+    </div>
+    <div class="tool-card">
+      <h3>Accuracy Lab</h3>
+      <p style="margin:0 0 8px;color:var(--ads-ink-muted)">Run OMR on fixtures, tune thresholds, and save reference answers.</p>
+      <button class="btn btn-primary">Open accuracy lab</button>
+    </div>
+  </div>
+</section>
+
+<!-- S11 calibrator -->
+<section class="screen" id="s11">
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <nav>
+      <div class="nav-link">Run exam</div>
+      <div class="nav-link">Results</div>
+      <div class="nav-link">Reports</div>
+      <div class="nav-link">Roster</div>
+      <div class="nav-link active">Tools</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Layout Calibrator</h1>
+    <p class="page-sub">150Q family · 5 × 30 grid + roll block overlay</p>
+    <div class="split">
+      <div class="overlay-preview" style="flex:1.4"></div>
+      <div class="panel" style="flex:0.6">
+        <h2>Path layout</h2>
+        <div class="field"><label>Family</label><select><option>150Q</option></select></div>
+        <div class="field"><label>Name</label><input value="Path_30Q_v1" /></div>
+        <div class="field"><label>Question block</label><input value="Q21–Q50" /></div>
+        <div class="btn-row"><button class="btn btn-primary">Save layout</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S12 accuracy lab -->
+<section class="screen" id="s12">
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <nav>
+      <div class="nav-link">Run exam</div>
+      <div class="nav-link">Results</div>
+      <div class="nav-link">Reports</div>
+      <div class="nav-link">Roster</div>
+      <div class="nav-link active">Tools</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Accuracy Lab</h1>
+    <p class="page-sub">Fixture run · Isra 150Q sample set</p>
+    <div class="stat-row">
+      <div class="stat"><b>96.4%</b><span>Auto-read match</span></div>
+      <div class="stat"><b>2</b><span>Blank flags</span></div>
+      <div class="stat"><b>1</b><span>Multi flags</span></div>
+      <div class="stat"><b>0.42</b><span>Fill threshold</span></div>
+    </div>
+    <div class="panel">
+      <table>
+        <thead><tr><th>Fixture</th><th>Roll</th><th>MCQ match</th><th>Flags</th></tr></thead>
+        <tbody>
+          <tr><td>sample_01.jpg</td><td>240101</td><td>30/30</td><td><span class="lozenge lz-success">Clean</span></td></tr>
+          <tr><td>sample_02.jpg</td><td>240118</td><td>28/30</td><td><span class="lozenge lz-warning">1 blank</span></td></tr>
+          <tr><td>sample_03.jpg</td><td>240205</td><td>29/30</td><td><span class="lozenge lz-warning">1 multi</span></td></tr>
+          <tr><td>sample_04.jpg</td><td>240311</td><td>30/30</td><td><span class="lozenge lz-success">Clean</span></td></tr>
+        </tbody>
+      </table>
+      <div class="btn-row"><button class="btn btn-primary">Save threshold</button><button class="btn">Re-run fixtures</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- S13 sheet sample only -->
+<section class="screen" id="s13" style="padding:24px;display:block;background:#fff">
+  <h1 class="page-title" style="text-align:center">Isra 150Q answer sheet</h1>
+  <p class="page-sub" style="text-align:center">5 columns × 30 questions · 6-digit roll bubble grid</p>
+  <div class="sheet-preview"></div>
+</section>
+
+</body>
+</html>

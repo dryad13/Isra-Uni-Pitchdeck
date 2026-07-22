@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Result Analytics Add-on — Mockups</title>
+<style>
+  :root {
+    --ads-primary: #0052cc;
+    --ads-ink: #172b4d;
+    --ads-ink-muted: #6b778c;
+    --ads-canvas: #ffffff;
+    --ads-surface-1: #f4f5f7;
+    --ads-surface-2: #ebecf0;
+    --ads-border: #dfe1e6;
+    --ads-success: #00875a;
+    --ads-warning: #ff8b00;
+    --ads-danger: #de350b;
+    --addon: #6554c0;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: var(--ads-ink); background: #c1c7d0; }
+  .screen {
+    width: 1280px; height: 800px; margin: 24px auto; background: var(--ads-canvas);
+    display: flex; overflow: hidden; position: relative;
+  }
+  .badge {
+    position: absolute; top: 12px; right: 16px; z-index: 2;
+    background: var(--addon); color: #fff; font-size: 11px; font-weight: 800;
+    letter-spacing: 0.06em; padding: 4px 10px; border-radius: 3px;
+  }
+  .preview-tag {
+    position: absolute; top: 12px; left: 240px; z-index: 2;
+    background: #fff0b3; color: #172b4d; font-size: 11px; font-weight: 700;
+    padding: 4px 8px; border-radius: 3px; border: 1px solid #ffe380;
+  }
+  .sidebar {
+    flex: 0 0 220px; background: var(--ads-surface-1); border-right: 1px solid var(--ads-border);
+    padding: 20px 12px;
+  }
+  .brand { font-weight: 700; font-size: 15px; padding: 4px 12px; margin-bottom: 16px; }
+  .nav-link { padding: 8px 12px; border-radius: 4px; color: var(--ads-ink-muted); font-weight: 500; margin-bottom: 2px; }
+  .nav-link.active { background: #eae6ff; color: var(--addon); box-shadow: inset 0 0 0 1px #c0b6f2; }
+  .main { flex: 1; padding: 0 24px 24px; min-width: 0; }
+  .header { display: flex; align-items: center; justify-content: center; padding: 12px 0; margin-bottom: 16px; border-bottom: 1px solid var(--ads-border); }
+  .header img { height: 52px; }
+  .page-title { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
+  .page-sub { color: var(--ads-ink-muted); margin: 0 0 16px; }
+  .panel { border: 1px solid var(--ads-border); border-radius: 4px; padding: 14px; background: #fff; margin-bottom: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--ads-border); }
+  th { background: var(--ads-surface-1); color: var(--ads-ink-muted); font-weight: 600; }
+  .bar { height: 8px; background: var(--ads-surface-2); border-radius: 4px; overflow: hidden; width: 90px; display: inline-block; vertical-align: middle; }
+  .bar > i { display: block; height: 100%; background: var(--ads-primary); }
+  .bar.warn > i { background: var(--ads-warning); }
+  .bar.danger > i { background: var(--ads-danger); }
+  .lozenge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: 700; }
+  .lz-ok { background: #e3fcef; color: #006644; }
+  .lz-warn { background: #fff0b3; color: #172b4d; }
+  .lz-bad { background: #ffebe6; color: #bf2600; }
+  .chart {
+    height: 220px; display: flex; align-items: flex-end; gap: 18px; padding: 12px 8px 0;
+    border-bottom: 1px solid var(--ads-border);
+  }
+  .col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .col .stack { width: 100%; display: flex; align-items: flex-end; gap: 4px; height: 180px; }
+  .col .b { flex: 1; border-radius: 3px 3px 0 0; background: var(--ads-primary); }
+  .col .b.alt { background: #6554c0; opacity: 0.85; }
+  .col label { font-size: 11px; color: var(--ads-ink-muted); text-align: center; }
+  .legend { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; color: var(--ads-ink-muted); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; }
+  .report {
+    border: 1px solid var(--ads-border); border-radius: 4px; padding: 20px; background: #fff;
+    min-height: 560px;
+  }
+  .report-head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--ads-ink); padding-bottom: 12px; margin-bottom: 16px; }
+  .report-head h2 { margin: 0; font-size: 18px; }
+  .meta { font-size: 12px; color: var(--ads-ink-muted); }
+  .kpi { display: flex; gap: 12px; margin-bottom: 16px; }
+  .kpi div { flex: 1; background: var(--ads-surface-1); border: 1px solid var(--ads-border); border-radius: 4px; padding: 10px; }
+  .kpi b { display: block; font-size: 20px; color: var(--addon); }
+  .kpi span { font-size: 11px; color: var(--ads-ink-muted); }
+  .btn { display: inline-flex; padding: 8px 14px; border-radius: 4px; border: 1px solid var(--ads-border); background: var(--ads-surface-1); font-weight: 600; }
+  .btn-primary { background: var(--addon); color: #fff; border-color: var(--addon); }
+</style>
+</head>
+<body>
+
+<section class="screen" id="s15">
+  <div class="badge">ADD-ON</div>
+  <div class="preview-tag">Concept preview</div>
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <div class="nav-link">Run exam</div>
+    <div class="nav-link">Results</div>
+    <div class="nav-link">Reports</div>
+    <div class="nav-link active">Analytics</div>
+    <div class="nav-link">Roster</div>
+    <div class="nav-link">Tools</div>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Item analysis</h1>
+    <p class="page-sub">MBBS Midterm · Sitting 2 — Physiology · n = 120 · Faculty / Academic Council view</p>
+    <div class="panel" style="max-height:580px;overflow:auto">
+      <table>
+        <thead>
+          <tr><th>Q</th><th>% Correct</th><th>Blank %</th><th>Multi %</th><th>A</th><th>B</th><th>C</th><th>D</th><th>Key</th><th>Flag</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>21</td><td>88% <span class="bar"><i style="width:88%"></i></span></td><td>2%</td><td>0%</td><td>88</td><td>4</td><td>5</td><td>1</td><td>A</td><td><span class="lozenge lz-ok">OK</span></td></tr>
+          <tr><td>22</td><td>76% <span class="bar"><i style="width:76%"></i></span></td><td>3%</td><td>1%</td><td>8</td><td>9</td><td>76</td><td>4</td><td>C</td><td><span class="lozenge lz-ok">OK</span></td></tr>
+          <tr><td>27</td><td>41% <span class="bar warn"><i style="width:41%"></i></span></td><td>12%</td><td>2%</td><td>18</td><td>22</td><td>41</td><td>7</td><td>C</td><td><span class="lozenge lz-warn">Hard</span></td></tr>
+          <tr><td>34</td><td>32% <span class="bar danger"><i style="width:32%"></i></span></td><td>18%</td><td>6%</td><td>28</td><td>32</td><td>14</td><td>8</td><td>B</td><td><span class="lozenge lz-bad">Review</span></td></tr>
+          <tr><td>39</td><td>55% <span class="bar warn"><i style="width:55%"></i></span></td><td>9%</td><td>3%</td><td>12</td><td>18</td><td>10</td><td>55</td><td>D</td><td><span class="lozenge lz-warn">Ambiguous</span></td></tr>
+          <tr><td>45</td><td>91% <span class="bar"><i style="width:91%"></i></span></td><td>1%</td><td>0%</td><td>91</td><td>3</td><td>3</td><td>2</td><td>A</td><td><span class="lozenge lz-ok">OK</span></td></tr>
+          <tr><td>50</td><td>67% <span class="bar"><i style="width:67%"></i></span></td><td>4%</td><td>1%</td><td>10</td><td>67</td><td>12</td><td>7</td><td>B</td><td><span class="lozenge lz-ok">OK</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="s16">
+  <div class="badge">ADD-ON</div>
+  <div class="preview-tag">Concept preview</div>
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <div class="nav-link">Run exam</div>
+    <div class="nav-link">Results</div>
+    <div class="nav-link">Reports</div>
+    <div class="nav-link active">Analytics</div>
+    <div class="nav-link">Roster</div>
+    <div class="nav-link">Tools</div>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Section / semester trends</h1>
+    <p class="page-sub">Average Secure Score by section across sittings · MBBS Midterm program</p>
+    <div class="panel">
+      <div class="chart">
+        <div class="col">
+          <div class="stack"><div class="b" style="height:72%"></div><div class="b alt" style="height:78%"></div></div>
+          <label>Sitting 1<br/>Anatomy</label>
+        </div>
+        <div class="col">
+          <div class="stack"><div class="b" style="height:68%"></div><div class="b alt" style="height:74%"></div></div>
+          <label>Sitting 2<br/>Physiology</label>
+        </div>
+        <div class="col">
+          <div class="stack"><div class="b" style="height:80%"></div><div class="b alt" style="height:71%"></div></div>
+          <label>Sitting 3<br/>Biochem</label>
+        </div>
+        <div class="col">
+          <div class="stack"><div class="b" style="height:75%"></div><div class="b alt" style="height:82%"></div></div>
+          <label>Semester<br/>avg</label>
+        </div>
+      </div>
+      <div class="legend"><span><i style="background:#0052cc"></i>Section A</span><span><i style="background:#6554c0"></i>Section B</span></div>
+    </div>
+    <div class="panel">
+      <table>
+        <thead><tr><th>Section</th><th>Sitting 1</th><th>Sitting 2</th><th>Sitting 3</th><th>Trend</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td>72.1</td><td>68.4</td><td>80.2</td><td><span class="lozenge lz-ok">↑ Improving</span></td></tr>
+          <tr><td>B</td><td>78.0</td><td>74.5</td><td>71.3</td><td><span class="lozenge lz-warn">↓ Watch</span></td></tr>
+          <tr><td>C</td><td>69.5</td><td>71.0</td><td>73.8</td><td><span class="lozenge lz-ok">↑ Steady</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="s17">
+  <div class="badge">ADD-ON</div>
+  <div class="preview-tag">Concept preview</div>
+  <aside class="sidebar">
+    <div class="brand">OMR Console</div>
+    <div class="nav-link">Run exam</div>
+    <div class="nav-link">Results</div>
+    <div class="nav-link">Reports</div>
+    <div class="nav-link active">Analytics</div>
+    <div class="nav-link">Roster</div>
+    <div class="nav-link">Tools</div>
+  </aside>
+  <div class="main">
+    <div class="header"><img src="../logo.png" alt="Isra University" /></div>
+    <h1 class="page-title">Exportable analytics report</h1>
+    <p class="page-sub">Faculty &amp; Academic Council pack · PDF / Excel</p>
+    <div class="report">
+      <div class="report-head">
+        <div>
+          <h2>Isra University · Exam Analytics Brief</h2>
+          <div class="meta">MBBS Midterm — Batch 2026 · Generated for Academic Council review</div>
+        </div>
+        <img src="../logo.png" alt="" style="height:48px" />
+      </div>
+      <div class="kpi">
+        <div><b>120</b><span>Sheets scored</span></div>
+        <div><b>74.8%</b><span>Mean Secure Score</span></div>
+        <div><b>3</b><span>Items flagged</span></div>
+        <div><b>2</b><span>Sections to watch</span></div>
+      </div>
+      <table>
+        <thead><tr><th>Section</th><th>Finding</th><th>Recommendation</th></tr></thead>
+        <tbody>
+          <tr><td>Item Q34</td><td>32% correct · 18% blank · split distractors</td><td>Review stem / key before next sitting</td></tr>
+          <tr><td>Section B</td><td>Declining Secure Score across 3 sittings</td><td>Faculty follow-up on Physiology topics</td></tr>
+          <tr><td>Program</td><td>Overall mean within expected band</td><td>No council action required</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:16px;display:flex;gap:8px">
+        <button class="btn btn-primary">Download PDF</button>
+        <button class="btn">Download Excel</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
