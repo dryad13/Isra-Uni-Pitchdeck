@@ -1,0 +1,44 @@
+OMR CLIENT DEMO
+===============
+
+REQUIREMENTS (must have)
+  - Windows 10 or 11, 64-bit
+  - 8 GB RAM minimum
+  - Visual C++ 2015-2022 x64 runtime (installer included)
+
+NOT SUPPORTED
+  - Windows 7 / 8
+  - 32-bit Windows
+  - Running directly from the USB stick
+
+
+SETUP ON DEMO LAPTOP
+--------------------
+1. Copy the whole OMR-Demo folder from USB to the laptop (e.g. Desktop).
+
+2. Run "Diagnose System.bat" - read the on-screen checks.
+
+3. If VC++ runtime is missing, run "Install VC++ Runtime.bat" once.
+
+4. Run "Extract OMR Demo.bat" (one-time, 1-3 min on older PCs).
+
+5. Double-click "Launch OMR.vbs" (or "Start OMR.bat")
+   - Opens in a native desktop window (no browser tab needed)
+   - First start on older PCs can take 1-3 minutes; please wait
+   - To stop: close the OMR window (Stop OMR.bat is optional emergency stop)
+   - Logs (if needed): OMR\data\omr.log
+
+
+IF IT STILL FAILS
+-----------------
+- Open startup.log and diagnose.log in this folder.
+- Send those two files back for troubleshooting.
+- Common fixes:
+    * Wrong Windows version (needs Win10 64-bit)
+    * Antivirus quarantined OMR.exe - add an exception
+    * Port 8080 already in use - reboot and try again
+
+
+LIVE SCAN DEMO
+--------------
+Copy a JPEG from DemoScans into OMR\Dropzone\ while ingestion is active.

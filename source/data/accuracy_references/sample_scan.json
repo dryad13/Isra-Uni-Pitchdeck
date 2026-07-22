@@ -1,0 +1,12 @@
+{
+  "fixture_id": "sample_scan",
+  "template_family": "150Q",
+  "roll_no": "569192",
+  "answers": {
+    "1": "A",
+    "2": "B",
+    "3": "C"
+  },
+  "confirmed_at": "2026-06-21T17:19:14.092178+00:00",
+  "confirmed_by_note": "test"
+}

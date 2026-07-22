@@ -1,0 +1,43 @@
+server:
+  host: "127.0.0.1"
+  port: 8080
+
+database:
+  url: "sqlite:///./data/omr.db"
+
+dropzone:
+  path: "C:\\OMR_Dropzone\\"
+  lock_suffix: ".omr_lock"
+  accepted_extensions: [".jpg", ".jpeg", ".tiff", ".tif", ".pdf"]
+
+omr:
+  strict_review: false
+  fill_threshold: 40
+  dynamic_threshold: true
+  blank_threshold: 18
+  multi_mark_threshold: 10
+  comfort_margin: 28
+  comfort_ratio: 1.35
+  alignment_review_below: 0.72
+  read_mode: hybrid
+  contour:
+    min_grid_confidence: 0.70
+    min_sheet_detection_ratio: 0.75
+    min_mark_pixels: 40
+    max_match_distance_px: 14
+  arbitration:
+    min_consensus_margin: 0.15
+  perf:
+    shared_otsu: true
+    roi_contours_only: true
+    skip_contour_on_low_grid: true
+
+processing:
+  max_workers: 4
+  target_seconds_per_page: 1.5
+  auto_resume_batches: false
+  auto_resume_ingestion: false
+  stale_processing_seconds: 120
+
+export:
+  default_mode: "literal"

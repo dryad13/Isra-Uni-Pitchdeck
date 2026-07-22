@@ -1,0 +1,18 @@
+[
+  {
+    "id": "sample_scan",
+    "label": "Live scanner — filled answer key",
+    "path": "sample_scan.jpeg",
+    "template_family": "150Q",
+    "sheet_question_count": 150,
+    "kind": "filled"
+  },
+  {
+    "id": "sample_scan_2",
+    "label": "Live scanner — blank sheet",
+    "path": "sample_scan_2.jpeg",
+    "template_family": "150Q",
+    "sheet_question_count": 150,
+    "kind": "blank"
+  }
+]
