@@ -1,0 +1,38 @@
+========================================
+  NEW OMR DEMO - READ THIS FIRST
+  Updated: 21 June 2026
+========================================
+
+LOOK FOR THESE FILES (in order):
+
+  NEW 1 - Extract OMR Demo.bat
+      Run once after copying this folder to the laptop.
+
+  NEW 2 - Launch OMR (no black window).vbs
+      <<< USE THIS TO START THE DEMO >>>
+      No terminal window. Browser opens automatically.
+
+  NEW 3 - Stop OMR.bat
+      Use when the demo is finished.
+
+  OMR-Demo.zip
+      The app (only needed for NEW 1 extract step)
+
+
+FIRST TIME ON A LAPTOP
+----------------------
+1. Copy this whole folder from USB to Desktop
+2. Run NEW 1 - Extract OMR Demo.bat
+3. Double-click NEW 2 - Launch OMR (no black window).vbs
+
+
+ALREADY EXTRACTED? (quick update only)
+--------------------------------------
+Copy these 3 files over your old folder:
+  - NEW 2 - Launch OMR (no black window).vbs
+  - NEW 3 - Stop OMR.bat
+  - NEW OMR.exe  -->  replace OMR\OMR.exe
+
+
+DO NOT USE (old version):
+  - Start OMR.bat  (shows black terminal window)
