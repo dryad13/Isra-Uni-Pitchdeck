@@ -1,6 +1,6 @@
 # Isra University — OMR Console Pitch Deck
 
-Stakeholder presentation for **OMR Console** (on-premises bubble-sheet exam processing) at Isra University, Hyderabad Sindh.
+Stakeholder presentation for **OMR Console** (on-premises bubble-sheet exam processing) at Isra University, Karachi Campus.
 
 ## Present
 

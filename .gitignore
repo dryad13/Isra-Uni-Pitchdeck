@@ -1,4 +1,6 @@
-﻿assets/node_modules/
+node_modules/
+dist/
+assets/node_modules/
 assets/package-lock.json
 assets/screenshots/_dry-run-slide.png
 .DS_Store
