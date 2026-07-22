@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OMR Console — Stakeholder Presentation · Isra University</title>
+<style>
+  :root {
+    --primary: #0052CC;
+    --primary-hover: #0747A6;
+    --ink: #172B4D;
+    --muted: #6B778C;
+    --canvas: #ffffff;
+    --surface: #F4F5F7;
+    --surface-2: #EBECF0;
+    --border: #DFE1E6;
+    --success: #00875A;
+    --warning: #FF8B00;
+    --danger: #DE350B;
+    --addon: #6554C0;
+    --on-primary: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Segoe UI Historic", sans-serif;
+    background: var(--canvas); color: var(--ink);
+  }
+  .deck { height: 100%; position: relative; overflow: hidden; }
+  .slide {
+    display: none; position: absolute; inset: 0;
+    padding: 48px 64px 72px;
+    flex-direction: column;
+    background: var(--canvas);
+  }
+  .slide.active { display: flex; }
+  .slide.addon { border-top: 6px solid var(--addon); }
+  .slide-label {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 8px;
+  }
+  .addon-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--addon); color: #fff; font-size: 11px; font-weight: 800;
+    letter-spacing: 0.08em; padding: 5px 10px; border-radius: 3px; margin-bottom: 12px;
+    width: fit-content;
+  }
+  .addon-badge .sub { background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 2px; font-weight: 700; }
+  h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.15; margin: 0 0 12px; font-weight: 700; color: var(--ink); }
+  h2 { font-size: clamp(22px, 3vw, 30px); margin: 0 0 12px; font-weight: 700; }
+  .lead { font-size: 18px; color: var(--muted); max-width: 720px; margin: 0 0 24px; line-height: 1.45; }
+  .bullets { margin: 0; padding: 0; list-style: none; max-width: 760px; }
+  .bullets li {
+    position: relative; padding: 10px 0 10px 28px; font-size: 17px; line-height: 1.4;
+    border-bottom: 1px solid var(--border);
+  }
+  .bullets li::before {
+    content: ""; position: absolute; left: 0; top: 18px;
+    width: 10px; height: 10px; border-radius: 2px; background: var(--primary);
+  }
+  .slide.addon .bullets li::before { background: var(--addon); }
+  .title-slide { align-items: center; justify-content: center; text-align: center; }
+  .title-slide img.logo { height: 120px; width: auto; margin-bottom: 28px; }
+  .title-slide .eyebrow { color: var(--primary); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; font-size: 13px; margin-bottom: 12px; }
+  .title-slide h1 { font-size: clamp(32px, 5vw, 48px); max-width: 900px; }
+  .title-slide .meta { margin-top: 24px; color: var(--muted); font-size: 15px; }
+  .two-col { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: start; flex: 1; min-height: 0; }
+  .two-col.shot-heavy { grid-template-columns: 1.35fr 0.85fr; }
+  .shot-wrap {
+    border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+    background: var(--surface); box-shadow: 0 1px 1px rgba(9,30,66,0.08), 0 0 0 1px rgba(9,30,66,0.04);
+    align-self: stretch; display: flex; align-items: center; justify-content: center;
+  }
+  .shot-wrap img { width: 100%; height: auto; display: block; max-height: calc(100vh - 200px); object-fit: contain; background: #fff; }
+  .caption-list { margin: 0; padding: 0; list-style: none; }
+  .caption-list li { padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 16px; line-height: 1.4; }
+  .caption-list strong { color: var(--primary); display: block; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .slide.addon .caption-list strong { color: var(--addon); }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 8px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 18px;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 16px; color: var(--primary); }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+  .flow {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 24px 0;
+  }
+  .flow .node {
+    background: var(--primary); color: #fff; font-weight: 700; font-size: 14px;
+    padding: 12px 16px; border-radius: 4px;
+  }
+  .flow .arrow { color: var(--muted); font-weight: 700; font-size: 18px; }
+  .outcomes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .outcome {
+    border: 1px solid var(--border); border-radius: 6px; padding: 16px 18px; background: var(--surface);
+  }
+  .outcome b { display: block; font-size: 15px; margin-bottom: 4px; color: var(--ink); }
+  .outcome span { font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .pipeline {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 20px;
+  }
+  .pipe-step {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 16px;
+  }
+  .pipe-step .n { color: var(--primary); font-weight: 800; font-size: 12px; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .pipe-step h3 { margin: 0 0 6px; font-size: 15px; }
+  .pipe-step p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .ask-list { list-style: none; margin: 16px 0 0; padding: 0; }
+  .ask-list li {
+    display: flex; gap: 14px; align-items: flex-start; padding: 14px 0;
+    border-bottom: 1px solid var(--border); font-size: 17px;
+  }
+  .ask-list .box {
+    flex: 0 0 28px; height: 28px; border: 2px solid var(--primary); border-radius: 4px; margin-top: 2px;
+  }
+  .ask-list .opt .box { border-color: var(--addon); }
+  .chrome {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 44px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; background: rgba(255,255,255,0.96);
+    border-top: 1px solid var(--border); z-index: 20; font-size: 12px; color: var(--muted);
+  }
+  .progress { position: absolute; left: 0; top: 0; height: 3px; background: var(--primary); transition: width 0.2s; }
+  .chrome .brand-mini { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink); }
+  .chrome .brand-mini img { height: 22px; }
+  .notes-panel {
+    display: none; position: fixed; right: 16px; bottom: 56px; width: min(380px, 40vw);
+    max-height: 40vh; overflow: auto; background: #fff; border: 1px solid var(--border);
+    border-radius: 6px; padding: 14px 16px; z-index: 30;
+    box-shadow: 0 8px 16px -4px rgba(9,30,66,0.25);
+  }
+  .notes-panel.open { display: block; }
+  .notes-panel h4 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .notes-panel p { margin: 0; font-size: 13px; line-height: 1.45; }
+  .help-hint { opacity: 0.85; }
+  .center-block { max-width: 880px; margin: 0 auto; width: 100%; }
+  .nav-map { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 20px; }
+  .nav-map span {
+    background: var(--surface); border: 1px solid var(--border); padding: 8px 12px;
+    border-radius: 4px; font-weight: 600; font-size: 13px;
+  }
+  .nav-map span.on { background: #DEEBFF; color: var(--primary); border-color: #B3D4FF; }
+  .appendix-tag {
+    display: inline-block; background: var(--surface-2); color: var(--muted);
+    font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 3px; margin-bottom: 10px;
+  }
+  .matrix { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
+  .matrix th, .matrix td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .matrix th { background: var(--surface); color: var(--muted); font-weight: 600; }
+  .check { color: var(--success); font-weight: 700; }
+  .cross { color: var(--danger); font-weight: 700; }
+  @media print {
+    .chrome, .notes-panel { display: none !important; }
+    .slide {
+      display: flex !important; position: relative; page-break-after: always;
+      break-after: page; height: 100vh; width: 100%;
+    }
+    .deck { overflow: visible; height: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- 1 Title -->
+<section class="slide title-slide active" data-notes="Welcome stakeholders. State this is OMR — bubble-sheet reading — not OCR. Isra’s on-prem exam processing console.">
+  <img class="logo" src="assets/logo.png" alt="Isra University Hyderabad Sindh" />
+  <div class="eyebrow">Isra University · Hyderabad Sindh</div>
+  <h1>OMR Console</h1>
+  <p class="lead" style="margin-left:auto;margin-right:auto">On-premises bubble-sheet exam processing — scan, verify, score, and export without leaving the exam desk.</p>
+  <div class="meta">Stakeholder briefing · Optical Mark Recognition (not OCR)</div>
+</section>
+
+<!-- 2 Problem -->
+<section class="slide" data-notes="Frame the pain: vendor dependency, cost, and the need for offline control of exam data on campus.">
+  <div class="slide-label">Why we built this</div>
+  <h1>The problem with vendor OMR</h1>
+  <p class="lead">Exam processing must be fast, accurate, and under university control — without perpetual licensing or cloud exposure.</p>
+  <ul class="bullets">
+    <li><strong style="color:var(--ink)">ABBYY / vendor lock-in</strong> — recurring cost and dependency for a core academic operation</li>
+    <li><strong style="color:var(--ink)">Exam-day volume</strong> — ~100 sheets per batch must move quickly with a clear exception path</li>
+    <li><strong style="color:var(--ink)">Data residency</strong> — answer sheets and scores should stay on a university Windows PC, offline</li>
+  </ul>
+</section>
+
+<!-- 3 Solution -->
+<section class="slide" data-notes="Walk the five-step pipeline once. This is the spine of the rest of the talk.">
+  <div class="slide-label">The solution</div>
+  <h1>One console. End to end.</h1>
+  <p class="lead">OMR Console replaces the vendor stack with an Isra-owned Windows application beside a Canon scanner.</p>
+  <div class="flow">
+    <div class="node">Scan</div><div class="arrow">→</div>
+    <div class="node">Auto-read</div><div class="arrow">→</div>
+    <div class="node">Verify</div><div class="arrow">→</div>
+    <div class="node">Score</div><div class="arrow">→</div>
+    <div class="node">Export</div>
+  </div>
+  <svg viewBox="0 0 920 160" width="100%" style="max-width:920px;margin-top:12px" aria-hidden="true">
+    <rect x="10" y="40" width="140" height="70" rx="6" fill="#F4F5F7" stroke="#DFE1E6"/>
+    <text x="80" y="80" text-anchor="middle" font-size="13" fill="#172B4D" font-family="Segoe UI,sans-serif">Canon DR-M140</text>
+    <path d="M155 75 H195" stroke="#6B778C" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="200" y="40" width="150" height="70" rx="6" fill="#DEEBFF" stroke="#B3D4FF"/>
+    <text x="275" y="75" text-anchor="middle" font-size="12" fill="#0747A6" font-family="Segoe UI,sans-serif">C:\OMR_Dropzone</text>
+    <text x="275" y="93" text-anchor="middle" font-size="11" fill="#6B778C" font-family="Segoe UI,sans-serif">auto-ingest</text>
+    <path d="M355 75 H395" stroke="#6B778C" stroke-width="2"/>
+    <rect x="400" y="40" width="160" height="70" rx="6" fill="#0052CC"/>
+    <text x="480" y="75" text-anchor="middle" font-size="13" fill="#fff" font-family="Segoe UI,sans-serif">OMR Pipeline</text>
+    <text x="480" y="93" text-anchor="middle" font-size="11" fill="#DEEBFF" font-family="Segoe UI,sans-serif">align · roll · bubbles</text>
+    <path d="M565 75 H605" stroke="#6B778C" stroke-width="2"/>
+    <rect x="610" y="40" width="140" height="70" rx="6" fill="#F4F5F7" stroke="#DFE1E6"/>
+    <text x="680" y="80" text-anchor="middle" font-size="13" fill="#172B4D" font-family="Segoe UI,sans-serif">Verify flags</text>
+    <path d="M755 75 H795" stroke="#6B778C" stroke-width="2"/>
+    <rect x="800" y="40" width="110" height="70" rx="6" fill="#E3FCEF" stroke="#ABF5D1"/>
+    <text x="855" y="80" text-anchor="middle" font-size="13" fill="#006644" font-family="Segoe UI,sans-serif">CSV / XLSX</text>
+  </svg>
+</section>
+
+<!-- 4 Outcomes -->
+<section class="slide" data-notes="Hit the leadership bullets: offline, speed, Secure Score, ownership. Pause for questions before product tour.">
+  <div class="slide-label">Outcomes</div>
+  <h1>What success looks like</h1>
+  <div class="outcomes">
+    <div class="outcome"><b>Fully offline</b><span>Localhost only · no post-install internet · data stays on disk</span></div>
+    <div class="outcome"><b>~100 sheets / batch</b><span>Target ≤1.5 seconds per page on the operator workstation</span></div>
+    <div class="outcome"><b>Secure Score</b><span>Blanks and multi-marks excluded from the denominator — fairer scoring</span></div>
+    <div class="outcome"><b>CSV &amp; Excel export</b><span>Literal (A/B/C/D) or binary (1/0) · session or full program</span></div>
+    <div class="outcome"><b>University-owned stack</b><span>ABBYY replacement with Isra branding and on-prem control</span></div>
+    <div class="outcome"><b>Human-in-the-loop</b><span>Only exceptions need review — clean sheets flow automatically</span></div>
+  </div>
+</section>
+
+<!-- 5 Product tour -->
+<section class="slide" data-notes="Orient to the five nav items. This is the operator’s daily home.">
+  <div class="slide-label">Product tour</div>
+  <h1>OMR Console at a glance</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/01-shell-run-exam.png" alt="OMR Console Run exam screen" /></div>
+    <div>
+      <div class="nav-map">
+        <span class="on">Run exam</span><span>Results</span><span>Reports</span><span>Roster</span><span>Tools</span>
+      </div>
+      <ul class="caption-list">
+        <li><strong>Operator home</strong>Three-step workflow: exam → key → process</li>
+        <li><strong>Isra branded</strong>University logo on every screen — white canvas, trust-first UI</li>
+        <li><strong>Desktop Windows</strong>Runs as OMR.exe beside the scanner</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 6 Who uses it -->
+<section class="slide" data-notes="Map personas so IT, ops, and academics know their lane.">
+  <div class="slide-label">People</div>
+  <h1>Who uses it</h1>
+  <div class="cards">
+    <div class="card">
+      <h3>Exam operators</h3>
+      <p>Daily desk workflow: set up sittings, process stacks, clear the review queue, export scores.</p>
+    </div>
+    <div class="card">
+      <h3>Academic admins</h3>
+      <p>Define exam programs, answer keys, subject splits, and student rosters.</p>
+    </div>
+    <div class="card">
+      <h3>QA / IT</h3>
+      <p>Layout calibrator, Accuracy Lab, Canon dropzone setup, database backups.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 Sheet families -->
+<section class="slide" data-notes="Show physical sheet. Emphasize bubble roll only — barcode ignored.">
+  <div class="slide-label">Sheet model</div>
+  <h1>Isra answer sheet families</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/13-isra-sheet-sample.png" alt="Isra 150Q sample sheet" /></div>
+    <ul class="caption-list">
+      <li><strong>150Q family</strong>5 columns × 30 questions — primary template</li>
+      <li><strong>60Q family</strong>4 × 15 layout for shorter sittings</li>
+      <li><strong>Roll number</strong>6-digit bubble grid only (barcode ignored)</li>
+      <li><strong>Multi-sitting</strong>Global Q numbering across sessions (e.g. Q1–20 then Q21–50)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 8 Step 1 -->
+<section class="slide" data-notes="Demo narrative: create program, pick session, see global Q range.">
+  <div class="slide-label">Workflow · Step 1</div>
+  <h1>Choose exam and session</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/02-step-exam-session.png" alt="Exam and session selection" /></div>
+    <ul class="caption-list">
+      <li><strong>Exam programs</strong>Recurring series with cumulative master keys</li>
+      <li><strong>Sessions</strong>Each sitting gets its own Q slice and path layout</li>
+      <li><strong>Why it matters</strong>No re-keying the entire paper for every weekly test</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 9 Step 2 -->
+<section class="slide" data-notes="Coverage map is the trust signal — scanning blocked until key is complete.">
+  <div class="slide-label">Workflow · Step 2</div>
+  <h1>Load the answer key</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/03-step-answer-key.png" alt="Answer key coverage and grid" /></div>
+    <ul class="caption-list">
+      <li><strong>Three ways in</strong>CSV/Excel · manual grid · marked sheet</li>
+      <li><strong>Coverage map</strong>See which global ranges are complete</li>
+      <li><strong>Guardrail</strong>Processing blocked until the session slice is fully keyed</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 10 Step 3 -->
+<section class="slide" data-notes="Canon dropzone story. Mention upload fallback.">
+  <div class="slide-label">Workflow · Step 3</div>
+  <h1>Process scanned sheets</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/04-step-scanning.png" alt="Batch processing progress" /></div>
+    <ul class="caption-list">
+      <li><strong>Dropzone</strong>Canon scans land in C:\OMR_Dropzone\ and are picked up automatically</li>
+      <li><strong>Live progress</strong>Processed count, review flags, average page time</li>
+      <li><strong>Fallback</strong>Manual file upload when needed</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 11 Results -->
+<section class="slide" data-notes="Only exceptions need humans. Pending badge keeps the queue visible.">
+  <div class="slide-label">Workflow · Results</div>
+  <h1>Review exceptions, not every sheet</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/05-results-queue.png" alt="Results review queue" /></div>
+    <ul class="caption-list">
+      <li><strong>Flagged only</strong>Blanks, multi-marks, ambiguous rolls</li>
+      <li><strong>Queue badge</strong>Pending count stays visible in navigation</li>
+      <li><strong>Operator focus</strong>Batch review clears exceptions so scoring can finish</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 12 Batch review detail -->
+<section class="slide" data-notes="Show crop + override. Mention L hotkey briefly.">
+  <div class="slide-label">Workflow · Verification</div>
+  <h1>Confirm what the machine flagged</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/06-batch-review.png" alt="Anomaly override review" /></div>
+    <ul class="caption-list">
+      <li><strong>Crop viewer</strong>See the exact bubble region in question</li>
+      <li><strong>Override</strong>Set A/B/C/D or Blank · confirm, skip, or flag</li>
+      <li><strong>Sheet ↔ Global Q</strong>Operators see both numbers during multi-sitting exams</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 13 Sheet audit -->
+<section class="slide" data-notes="Auditability for disputes and academic integrity.">
+  <div class="slide-label">Workflow · Audit</div>
+  <h1>Per-sheet question audit</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/07-sheet-detail.png" alt="Sheet detail audit table" /></div>
+    <ul class="caption-list">
+      <li><strong>Read vs key</strong>Every question comparable at a glance</li>
+      <li><strong>Overrides marked</strong>Human decisions remain visible</li>
+      <li><strong>Trust</strong>Supports student queries and internal QA</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 14 Reports -->
+<section class="slide" data-notes="Clarify this is operational export — not the analytics add-on.">
+  <div class="slide-label">Workflow · Reports</div>
+  <h1>Scores and operational export</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/08-reports-export.png" alt="Reports and Secure Score export" /></div>
+    <ul class="caption-list">
+      <li><strong>Secure Score &amp; %</strong>Side-by-side for fair comparison</li>
+      <li><strong>Export modes</strong>Literal or binary · CSV or Excel</li>
+      <li><strong>Scope</strong>One session or cumulative program — this is core ops, not analytics</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 15 Roster -->
+<section class="slide" data-notes="Unknown rolls go to review — protects result integrity.">
+  <div class="slide-label">Workflow · Roster</div>
+  <h1>Student roster</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/09-roster.png" alt="Student roster screen" /></div>
+    <ul class="caption-list">
+      <li><strong>CSV / Excel upload</strong>Roll lists per exam program</li>
+      <li><strong>Unknown rolls</strong>Surfaced for review instead of silent mis-score</li>
+      <li><strong>Sections</strong>Supports later academic grouping</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 16 Tools -->
+<section class="slide" data-notes="Keep brief — QA/IT only. Don’t digress into calibration detail unless asked.">
+  <div class="slide-label">Tools</div>
+  <h1>Calibrator &amp; Accuracy Lab</h1>
+  <div class="two-col">
+    <div class="shot-wrap"><img src="assets/screenshots/10-tools-hub.png" alt="Tools hub" /></div>
+    <div class="shot-wrap"><img src="assets/screenshots/11-calibrator.png" alt="Layout calibrator" /></div>
+  </div>
+  <p class="lead" style="margin-top:16px;margin-bottom:0">For QA and IT: tune bubble layouts and validate read accuracy on fixtures before exam day.</p>
+</section>
+
+<!-- 17 How reading works -->
+<section class="slide" data-notes="Light technical — four steps only. No code.">
+  <div class="slide-label">How it works</div>
+  <h1>From image to answers</h1>
+  <div class="pipeline">
+    <div class="pipe-step"><div class="n">01</div><h3>Align</h3><p>Corner bullseyes → perspective warp so every sheet lines up</p></div>
+    <div class="pipe-step"><div class="n">02</div><h3>Roll</h3><p>Decode the 6-digit bubble matrix</p></div>
+    <div class="pipe-step"><div class="n">03</div><h3>Bubbles</h3><p>Measure A/B/C/D fill density with dynamic threshold</p></div>
+    <div class="pipe-step"><div class="n">04</div><h3>Flag</h3><p>Blank and multi-mark anomalies go to human review</p></div>
+  </div>
+</section>
+
+<!-- 18 Security -->
+<section class="slide" data-notes="Leadership assurance slide. Localhost + SQLite + no telemetry.">
+  <div class="slide-label">Security</div>
+  <h1>Data stays on campus</h1>
+  <ul class="bullets">
+    <li><strong style="color:var(--ink)">Localhost only</strong> — UI and API bind to 127.0.0.1:8080</li>
+    <li><strong style="color:var(--ink)">SQLite on disk</strong> — exam data in a local database with backup scripts</li>
+    <li><strong style="color:var(--ink)">No cloud telemetry</strong> — designed for fully offline operation after install</li>
+    <li><strong style="color:var(--ink)">Audit trail</strong> — answer-key changes and overrides remain traceable</li>
+  </ul>
+</section>
+
+<!-- 19 Deploy -->
+<section class="slide" data-notes="Hardware reality: Windows PC + Canon. Demo pack for training.">
+  <div class="slide-label">Deploy</div>
+  <h1>Hardware &amp; deployment</h1>
+  <div class="cards">
+    <div class="card"><h3>Workstation</h3><p>Windows PC next to the scanner · OMR.exe one-folder package</p></div>
+    <div class="card"><h3>Scanner</h3><p>Canon imageFORMULA DR-M140 → folder profile into the dropzone</p></div>
+    <div class="card"><h3>Backup</h3><p>Nightly omr.db backup · documented acceptance checklist</p></div>
+  </div>
+</section>
+
+<!-- 20 Quality -->
+<section class="slide" data-notes="Close the trust act with Accuracy Lab proof point.">
+  <div class="slide-label">Quality</div>
+  <h1>Built-in quality controls</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/12-accuracy-lab.png" alt="Accuracy Lab results" /></div>
+    <ul class="caption-list">
+      <li><strong>Anomaly crops</strong>Operators see the disputed region</li>
+      <li><strong>Verification queue</strong>Nothing silent — flags must be cleared</li>
+      <li><strong>Accuracy Lab</strong>Fixture runs and threshold tuning before go-live</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 21 Addon opener -->
+<section class="slide addon" data-notes="PAUSE. Reframe: core is done. This block is optional add-on for faculty/council. Do not imply it blocks go-live.">
+  <div class="addon-badge">ADD-ON <span class="sub">OPTIONAL</span></div>
+  <h1>Result Analytics Dashboard</h1>
+  <p class="lead">Core product gets you scored results. This add-on turns those results into academic insight — for faculty and the Academic Council, not the daily OMR operator.</p>
+  <ul class="bullets">
+    <li>Ships <strong style="color:var(--ink)">after</strong> core go-live — does not block exam processing</li>
+    <li>Uses data the OMR Console already produces</li>
+    <li>Does <strong style="color:var(--ink)">not</strong> replace operational Reports (Secure Score / CSV export)</li>
+  </ul>
+</section>
+
+<!-- 22 Item analysis -->
+<section class="slide addon" data-notes="Walk Q34 example — weak item for paper review.">
+  <div class="addon-badge">ADD-ON <span class="sub">ITEM ANALYSIS</span></div>
+  <h1>Per-question item analysis</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/15-addon-item-analysis.png" alt="Item analysis mockup" /></div>
+    <ul class="caption-list">
+      <li><strong>Difficulty view</strong>% correct, blank rate, multi-mark rate per question</li>
+      <li><strong>Distractors</strong>A/B/C/D distribution shows where students went</li>
+      <li><strong>Paper quality</strong>Flag weak or ambiguous items before the next sitting</li>
+      <li><strong>Preview</strong>Concept mockup — not required for go-live</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 23 Trends -->
+<section class="slide addon" data-notes="Section B declining — council-relevant signal.">
+  <div class="addon-badge">ADD-ON <span class="sub">TRENDS</span></div>
+  <h1>Section &amp; semester performance</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/16-addon-trends.png" alt="Trends mockup" /></div>
+    <ul class="caption-list">
+      <li><strong>Cohort tracking</strong>Compare sections across sittings</li>
+      <li><strong>Program view</strong>Spot rising or falling subjects over a semester</li>
+      <li><strong>Actionable</strong>Gives deans a signal beyond a single exam average</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 24 Export reports -->
+<section class="slide addon" data-notes="Council-ready pack. Invite interest; don’t sell hard.">
+  <div class="addon-badge">ADD-ON <span class="sub">EXPORTS</span></div>
+  <h1>Faculty &amp; council-ready reports</h1>
+  <div class="two-col shot-heavy">
+    <div class="shot-wrap"><img src="assets/screenshots/17-addon-export-report.png" alt="Analytics export report mockup" /></div>
+    <ul class="caption-list">
+      <li><strong>Meeting packs</strong>PDF / Excel briefs with findings and recommendations</li>
+      <li><strong>Audience</strong>Faculty review and Academic Council — not the scan desk</li>
+      <li><strong>Optional pilot</strong>Can follow core go-live when the university is ready</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 25 Live demo -->
+<section class="slide" data-notes="If doing live demo: Run exam → key → drop samples → Results → Reports. Core only.">
+  <div class="slide-label">Optional live demo</div>
+  <h1>Five-minute path (core product)</h1>
+  <ul class="bullets">
+    <li>Open <strong style="color:var(--ink)">Run exam</strong> → select program &amp; session</li>
+    <li>Show answer key coverage for the sitting</li>
+    <li>Drop 2–3 sample scans into the dropzone (or upload)</li>
+    <li>Open <strong style="color:var(--ink)">Results</strong> → clear one flagged item</li>
+    <li>Open <strong style="color:var(--ink)">Reports</strong> → show Secure Score and export</li>
+  </ul>
+</section>
+
+<!-- 26 Roadmap -->
+<section class="slide" data-notes="Be honest: core path vs polish vs add-on phase.">
+  <div class="slide-label">Status</div>
+  <h1>Roadmap</h1>
+  <div class="cards">
+    <div class="card"><h3>Core console</h3><p>Run exam · verify · score · export · roster · offline Windows deploy</p></div>
+    <div class="card"><h3>QA polish</h3><p>Calibrator and Accuracy Lab continue to harden sheet families</p></div>
+    <div class="card" style="border-color:#C0B6F2;background:#EAE6FF"><h3 style="color:var(--addon)">Add-on (phased)</h3><p>Result Analytics Dashboard — item analysis, trends, council exports</p></div>
+  </div>
+</section>
+
+<!-- 27 Ask -->
+<section class="slide" data-notes="Close with clear asks. Last item is optional analytics interest.">
+  <div class="slide-label">Next steps</div>
+  <h1>What we need from you</h1>
+  <ul class="ask-list">
+    <li><span class="box"></span><span>Approve <strong>core OMR Console go-live</strong> for the exam workstation</span></li>
+    <li><span class="box"></span><span>Schedule <strong>operator training</strong> (one sitting is enough to start)</span></li>
+    <li><span class="box"></span><span>Confirm <strong>Canon DR-M140</strong> dropzone profile on the target PC</span></li>
+    <li class="opt"><span class="box"></span><span><strong>Optional:</strong> register interest / pilot for the Result Analytics add-on</span></li>
+  </ul>
+</section>
+
+<!-- Appendix A -->
+<section class="slide" data-notes="Q&A only.">
+  <div class="appendix-tag">APPENDIX · Q&amp;A</div>
+  <h1>Secure Score formula</h1>
+  <p class="lead">Secure Score = correct ÷ (total − blank − multi) × 100</p>
+  <ul class="bullets">
+    <li>Blanks and multi-marks do not count as wrong</li>
+    <li>Percentage still available side-by-side for legacy comparison</li>
+    <li>Negative marking is configurable per session when required</li>
+  </ul>
+</section>
+
+<!-- Appendix B -->
+<section class="slide" data-notes="Q&A only.">
+  <div class="appendix-tag">APPENDIX · Q&amp;A</div>
+  <h1>Core vs ABBYY (feature view)</h1>
+  <table class="matrix">
+    <thead><tr><th>Capability</th><th>OMR Console</th><th>Typical vendor OMR</th></tr></thead>
+    <tbody>
+      <tr><td>On-prem / offline</td><td class="check">Yes</td><td>Varies / license</td></tr>
+      <tr><td>Isra sheet templates</td><td class="check">150Q / 60Q calibrated</td><td>Custom setup cost</td></tr>
+      <tr><td>Verification workflow</td><td class="check">Built-in</td><td>Varies</td></tr>
+      <tr><td>Multi-sitting master key</td><td class="check">Yes</td><td>Often manual</td></tr>
+      <tr><td>University-owned stack</td><td class="check">Yes</td><td class="cross">Vendor lock-in</td></tr>
+      <tr><td>Analytics add-on</td><td>Optional phased</td><td>Separate products</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Appendix C -->
+<section class="slide" data-notes="Q&A only for faculty.">
+  <div class="appendix-tag">APPENDIX · ANALYTICS GLOSSARY</div>
+  <h1>Analytics metrics (add-on)</h1>
+  <ul class="bullets">
+    <li><strong style="color:var(--ink)">Item difficulty</strong> — % of students answering correctly</li>
+    <li><strong style="color:var(--ink)">Blank / multi rates</strong> — signal ambiguous stems or poor bubbling</li>
+    <li><strong style="color:var(--ink)">Distractor distribution</strong> — which wrong options attracted responses</li>
+    <li><strong style="color:var(--ink)">Section trend</strong> — mean Secure Score across sittings for a cohort</li>
+  </ul>
+</section>
+
+</div>
+
+<div class="chrome">
+  <div class="progress" id="progress"></div>
+  <div class="brand-mini"><img src="assets/logo.png" alt="" /> OMR Console · Isra University</div>
+  <div id="counter">1 / 1</div>
+  <div class="help-hint">← → Space · N notes · P print · F11 fullscreen</div>
+</div>
+<div class="notes-panel" id="notes"><h4>Speaker notes</h4><p id="notesText"></p></div>
+
+<script>
+(function () {
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  let i = 0;
+  const counter = document.getElementById("counter");
+  const progress = document.getElementById("progress");
+  const notes = document.getElementById("notes");
+  const notesText = document.getElementById("notesText");
+
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
+    counter.textContent = (i + 1) + " / " + slides.length;
+    progress.style.width = ((i + 1) / slides.length * 100) + "%";
+    notesText.textContent = slides[i].dataset.notes || "";
+  }
+
+  function next() { show(i + 1); }
+  function prev() { show(i - 1); }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); next(); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); prev(); }
+    else if (e.key === "Home") { e.preventDefault(); show(0); }
+    else if (e.key === "End") { e.preventDefault(); show(slides.length - 1); }
+    else if (e.key === "n" || e.key === "N") { notes.classList.toggle("open"); }
+    else if (e.key === "p" || e.key === "P") { window.print(); }
+  });
+
+  let touchX = null;
+  document.addEventListener("touchstart", (e) => { touchX = e.changedTouches[0].screenX; }, { passive: true });
+  document.addEventListener("touchend", (e) => {
+    if (touchX == null) return;
+    const dx = e.changedTouches[0].screenX - touchX;
+    if (Math.abs(dx) > 50) (dx < 0 ? next : prev)();
+    touchX = null;
+  }, { passive: true });
+
+  show(0);
+})();
+</script>
+</body>
+</html>
