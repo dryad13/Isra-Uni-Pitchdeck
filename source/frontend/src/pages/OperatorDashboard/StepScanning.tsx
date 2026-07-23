@@ -18,7 +18,7 @@ type Props = {
   onExpectedCountChange: (v: string) => void;
   onStartScanning: () => Promise<void>;
   onStopScanning: () => Promise<void>;
-  onUploadScan: (file: File) => Promise<void>;
+  onUploadScan: (files: File[] | FileList) => Promise<void>;
   onResumeBatch?: (batchId: number) => Promise<void>;
   interruptedBatch?: BatchSummary | null;
   starting?: boolean;
@@ -43,23 +43,24 @@ export default function StepScanning({
   stopping,
   uploading,
 }: Props) {
-  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [pendingFiles, setPendingFiles] = useState<File[] | null>(null);
 
-  const handleFile = (files: FileList | null) => {
-    const file = files?.[0];
-    if (!file) return;
+  const handleFile = (filesInput: FileList | File[] | null) => {
+    if (!filesInput) return;
+    const fileArray = Array.from(filesInput);
+    if (!fileArray.length) return;
     if (!scanningThisSession) {
-      setPendingFile(file);
+      setPendingFiles(fileArray);
       return;
     }
-    void onUploadScan(file);
+    void onUploadScan(fileArray);
   };
 
   const confirmStartAndUpload = async () => {
-    if (!pendingFile) return;
+    if (!pendingFiles) return;
     await onStartScanning();
-    await onUploadScan(pendingFile);
-    setPendingFile(null);
+    await onUploadScan(pendingFiles);
+    setPendingFiles(null);
   };
 
   return (
@@ -205,12 +206,12 @@ export default function StepScanning({
       </div>
 
       <ConfirmDialog
-        open={pendingFile != null}
+        open={pendingFiles != null}
         title="Start scanning first?"
-        message={`Scanning is not active. Start processing for this session and upload "${pendingFile?.name}"?`}
+        message={`Scanning is not active. Start processing for this session and upload ${pendingFiles?.length === 1 ? `"${pendingFiles[0].name}"` : `${pendingFiles?.length} scan file(s)`}?`}
         confirmLabel="Start and upload"
         onConfirm={confirmStartAndUpload}
-        onCancel={() => setPendingFile(null)}
+        onCancel={() => setPendingFiles(null)}
       />
     </div>
   );

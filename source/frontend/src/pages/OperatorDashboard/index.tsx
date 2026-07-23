@@ -331,8 +331,16 @@ export default function OperatorDashboard() {
       toast.info("Processing stopped.");
     }).catch((e) => setError((e as Error).message));
 
-  const uploadScan = (file: File) => {
-    if (selectedSessionId == null) return Promise.resolve();
+  const uploadScan = (filesInput: File[] | FileList) => {
+    const files = filesInput instanceof FileList ? Array.from(filesInput) : filesInput;
+    const validFiles = files.filter((f) => /\.(jpg|jpeg|png|tif|tiff|pdf)$/i.test(f.name));
+    if (selectedSessionId == null || validFiles.length === 0) {
+      if (files.length > 0 && validFiles.length === 0) {
+        toast.error("No valid scan files (.jpg, .jpeg, .png, .tif, .pdf) found in selection.");
+      }
+      return Promise.resolve();
+    }
+
     return uploadScanBusy.run(async () => {
       setError("");
       const watchingThis =
@@ -350,10 +358,15 @@ export default function OperatorDashboard() {
           body: JSON.stringify(payload),
         });
       }
-      const form = new FormData();
-      form.append("file", file);
-      setIngestion(await upload<IngestionStatus>("/ingestion/upload", form));
-      toast.success(`Uploaded ${file.name} for processing.`);
+
+      let uploadedCount = 0;
+      for (const file of validFiles) {
+        const form = new FormData();
+        form.append("file", file);
+        setIngestion(await upload<IngestionStatus>("/ingestion/upload", form));
+        uploadedCount++;
+      }
+      toast.success(`Uploaded ${uploadedCount} scan file${uploadedCount > 1 ? "s" : ""} for processing.`);
     }).catch((e) => setError((e as Error).message));
   };
 

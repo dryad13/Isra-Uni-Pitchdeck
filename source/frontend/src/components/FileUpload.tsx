@@ -7,8 +7,9 @@ type Props = {
   accept?: string;
   disabled?: boolean;
   busy?: boolean;
-  onFile: (files: FileList | null) => void;
+  onFile: (files: FileList | File[] | null) => void;
   hint?: string;
+  allowFolder?: boolean;
 };
 
 export default function FileUpload({
@@ -18,22 +19,33 @@ export default function FileUpload({
   busy,
   onFile,
   hint,
+  allowFolder = true,
 }: Props) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const folderInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
-  const [fileName, setFileName] = useState("");
+  const [summaryText, setSummaryText] = useState("");
 
-  const pick = () => inputRef.current?.click();
+  const pickFiles = () => fileInputRef.current?.click();
+  const pickFolder = () => folderInputRef.current?.click();
 
-  const handleFiles = (files: FileList | null) => {
-    if (!files?.length) return;
-    setFileName(files[0].name);
-    onFile(files);
+  const handleFiles = (filesInput: FileList | File[] | null) => {
+    if (!filesInput) return;
+    const fileArray = Array.from(filesInput);
+    if (fileArray.length === 0) return;
+
+    if (fileArray.length === 1) {
+      setSummaryText(fileArray[0].name);
+    } else {
+      setSummaryText(`${fileArray.length} scan files selected`);
+    }
+    onFile(filesInput);
   };
 
   const clear = () => {
-    setFileName("");
-    if (inputRef.current) inputRef.current.value = "";
+    setSummaryText("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (folderInputRef.current) folderInputRef.current.value = "";
   };
 
   return (
@@ -51,33 +63,56 @@ export default function FileUpload({
       }}
     >
       <input
-        ref={inputRef}
+        ref={fileInputRef}
         id={id}
         type="file"
+        multiple
         accept={accept}
         disabled={disabled || busy}
         className="file-upload-input"
         onChange={(e) => handleFiles(e.target.files)}
       />
+      {allowFolder && (
+        <input
+          ref={folderInputRef}
+          id={`${id}-folder`}
+          type="file"
+          // @ts-expect-error webkitdirectory is supported in HTML5 directory selection
+          webkitdirectory=""
+          directory=""
+          multiple
+          disabled={disabled || busy}
+          className="file-upload-input"
+          onChange={(e) => handleFiles(e.target.files)}
+        />
+      )}
       <div className="file-upload-body">
         {busy ? (
-          <Spinner label="Uploading…" />
-        ) : fileName ? (
+          <Spinner label="Uploading scans…" />
+        ) : summaryText ? (
           <>
-            <span className="file-upload-name">{fileName}</span>
+            <span className="file-upload-name">{summaryText}</span>
             <Button variant="subtle" type="button" onClick={clear} disabled={disabled}>
               Clear
             </Button>
           </>
         ) : (
           <>
-            <span className="muted">{hint ?? "Drag a file here or choose one"}</span>
-            <Button variant="default" type="button" onClick={pick} disabled={disabled}>
-              Choose file
-            </Button>
+            <span className="muted">{hint ?? "Drop scan files or a folder here"}</span>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
+              <Button variant="default" type="button" onClick={pickFiles} disabled={disabled}>
+                Choose file(s)
+              </Button>
+              {allowFolder && (
+                <Button variant="default" type="button" onClick={pickFolder} disabled={disabled}>
+                  Choose folder 📁
+                </Button>
+              )}
+            </div>
           </>
         )}
       </div>
     </div>
   );
 }
+
